@@ -16,11 +16,12 @@ export interface AuthClient {
 
 export type KeycloakConnectionConfig = ConnectionConfig;
 
-export interface ClientConfig {
+export interface AuthConfig {
+  adminPassword: string;
+  adminUsername: string;
   clientId: string;
-  name: string;
-  password: string;
-  username: string;
+  clientName: string;
+  clientSecret: string;
 }
 
 export default class KeycloakTokenAuth {
@@ -31,19 +32,24 @@ export default class KeycloakTokenAuth {
   tokenName: string;
 
   constructor(
-    private clientConfig: ClientConfig,
+    private clientConfig: AuthConfig,
     private keycloakConnectionConfig?: KeycloakConnectionConfig
   ) {
+    if (!this.clientConfig.clientName) {
+      this.clientConfig.clientName = this.clientConfig.clientId;
+    }
     this.keycloakAdmin = new KeycloakAdmin(this.keycloakConnectionConfig);
-    this.tokenName = `${this.clientConfig.name}.token`;
+    this.tokenName = `${this.clientConfig.clientName}.token`;
   }
 
   async authKeycloak() {
+    if (this.keycloakAuthenticated) return;
     await this.keycloakAdmin.auth({
       clientId: this.clientConfig.clientId,
-      grantType: 'password',
-      password: this.clientConfig.password,
-      username: this.clientConfig.username
+      clientSecret: this.clientConfig.clientSecret,
+      grantType: 'client_credentials',
+      password: this.clientConfig.adminPassword,
+      username: this.clientConfig.adminUsername
     });
     this.keycloakAuthenticated = true;
   }
@@ -53,6 +59,7 @@ export default class KeycloakTokenAuth {
     email,
     username
   }: FindOrCreateUserOptions): Promise<UserRepresentation | null> {
+    await this.authKeycloak();
     const users = await this.keycloakAdmin.users.find({
       email,
       username
@@ -79,6 +86,7 @@ export default class KeycloakTokenAuth {
     username,
     token
   }: AuthClient): Promise<UserRepresentation | null> {
+    await this.authKeycloak();
     const user = await this.findOrCreateUser({
       clientToken: token,
       email,

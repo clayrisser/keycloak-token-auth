@@ -3,10 +3,11 @@ import KeycloakTokenAuth from './index';
 (async () => {
   const keycloakTokenAuth = new KeycloakTokenAuth(
     {
+      adminPassword: process.env.KEYCLOAK_ADMIN_PASSWORD || '',
+      adminUsername: process.env.KEYCLOAK_ADMIN_USERNAME || '',
       clientId: process.env.KEYCLOAK_CLIENT_ID || '',
-      name: process.env.KEYCLOAK_CLIENT_NAME || '',
-      password: process.env.KEYCLOAK_CLIENT_PASSWORD || '',
-      username: process.env.KEYCLOAK_CLIENT_USERNAME || ''
+      clientName: process.env.KEYCLOAK_CLIENT_NAME || '',
+      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || ''
     },
     {
       baseUrl: process.env.KEYCLOAK_BASE_URL || 'http://localhost:8080',
@@ -14,8 +15,8 @@ import KeycloakTokenAuth from './index';
     }
   );
   await keycloakTokenAuth.authClient({
-    email: process.env.KEYCLOAK_USER_EMAIL || process.argv?.[2] || '',
-    token: process.env.KEYCLOAK_USER_TOKEN || process.argv?.[3] || '',
-    username: process.env.KEYCLOAK_USER_USERNAME || process.argv?.[4] || ''
+    username: process.env.KEYCLOAK_USER_USERNAME || process.argv?.[2] || '',
+    email: process.env.KEYCLOAK_USER_EMAIL || process.argv?.[3] || '',
+    token: process.env.KEYCLOAK_USER_TOKEN || process.argv?.[4] || ''
   });
 })();

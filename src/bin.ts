@@ -16,7 +16,7 @@ import KeycloakTokenAuth from './index';
   );
   await keycloakTokenAuth.authClient({
     username: process.env.KEYCLOAK_USER_USERNAME || process.argv?.[2] || '',
-    email: process.env.KEYCLOAK_USER_EMAIL || process.argv?.[3] || '',
-    token: process.env.KEYCLOAK_USER_TOKEN || process.argv?.[4] || ''
+    token: process.env.KEYCLOAK_USER_TOKEN || process.argv?.[3] || '',
+    email: process.env.KEYCLOAK_USER_EMAIL || process.argv?.[4]
   });
-})();
+})().catch(console.error);

@@ -4,12 +4,12 @@ import { ConnectionConfig } from 'keycloak-admin/lib/client';
 
 export interface FindOrCreateUserOptions {
   clientToken?: string;
-  email: string;
+  email?: string;
   username: string;
 }
 
 export interface AuthClient {
-  email: string;
+  email?: string;
   token: string;
   username: string;
 }
